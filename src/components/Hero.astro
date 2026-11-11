@@ -1,0 +1,176 @@
+---
+// Photo-led hero.
+// Laptop/desktop: text on the top part of the photo, framed so the trailer (lower half) stays uncovered.
+// Phones and tablets: text on a green panel above the full, uncropped photo.
+import { Picture } from 'astro:assets';
+import Icon from './Icon.astro';
+import hero from '../assets/photos/yard-side.jpg'; // IMG_0603
+import { business, pricing } from '../config';
+---
+
+<section class="hero" data-hero aria-labelledby="hero-title">
+  <div class="container">
+    <div class="card" data-reveal="scale">
+      <div class="photo">
+        <Picture
+          src={hero}
+          formats={['avif', 'webp']}
+          quality={80}
+          widths={[640, 960, 1280, 1600, 2000, 2400]}
+          sizes="(min-width: 1320px) 1240px, calc(100vw - 2rem)"
+          alt="Side view of the 16ft Brian James twin-axle car transporter trailer"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+      <div class="content">
+        <p class="eyebrow light" data-reveal style="--i:1">Car transporter hire · Exeter, Devon</p>
+        <h1 id="hero-title" class="title" data-lines>
+          <span class="line-mask" style="--i:1"><span>Exeter Trailer Hire</span></span>
+        </h1>
+        <p class="lead" data-reveal style="--i:3">
+          Hire our 16ft Brian James car transporter, with a winch and wheel straps included. From £{pricing.day} a day.
+        </p>
+        <div class="ctas" data-reveal style="--i:4">
+          <a class="btn btn--accent" href="#book">Check availability <Icon name="arrow-right" /></a>
+          <a class="btn btn--light" href={business.phoneHref}><Icon name="phone" /> {business.phoneDisplay}</a>
+        </div>
+      </div>
+      <div class="price-chip" aria-hidden="true">
+        <span class="from">From</span>
+        <span class="amount">£{pricing.day}</span>
+        <span class="per">per day</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-top: clamp(0.75rem, 2vw, 1.5rem);
+  }
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    background: var(--forest-deep);
+    color: var(--cream);
+    isolation: isolate;
+  }
+  .photo {
+    order: 2;
+    aspect-ratio: 4 / 3; /* phones: the whole photo, uncropped */
+    background: var(--sage);
+  }
+  .photo :global(picture),
+  .photo :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .photo :global(img) {
+    object-fit: cover;
+    object-position: 50% 62%;
+  }
+  .content {
+    order: 1;
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+    padding: 2rem 1.25rem 1.75rem;
+  }
+  .light {
+    color: var(--sage);
+  }
+  .title {
+    font-size: clamp(2.6rem, 1.4rem + 5.5vw, 6.5rem);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.045em;
+  }
+  .lead {
+    color: rgb(245 240 230 / 0.9);
+    max-width: 34ch;
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .card :focus-visible {
+    outline-color: var(--sage-deep);
+  }
+  .price-chip {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    width: clamp(88px, 11vw, 132px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--rust);
+    color: var(--white);
+    text-align: center;
+    line-height: 1;
+    box-shadow: var(--shadow-lift);
+    z-index: 2;
+  }
+  .from,
+  .per {
+    font-size: clamp(0.7rem, 0.62rem + 0.25vw, 0.85rem);
+    font-weight: 500;
+  }
+  .amount {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.6rem, 1.1rem + 1.8vw, 2.5rem);
+    letter-spacing: -0.03em;
+    margin-block: 0.2rem;
+  }
+
+  /* Laptop and up: text sits on the photo, kept to the top so the trailer (lower half) stays clear */
+  @media (min-width: 1024px) {
+    .card {
+      display: block;
+      aspect-ratio: 16 / 10;
+    }
+    .photo {
+      position: absolute;
+      inset: 0;
+      aspect-ratio: auto;
+    }
+    .photo :global(img) {
+      object-position: 50% 55%;
+    }
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(180deg, rgb(12 26 18 / 0.86) 0%, rgb(12 26 18 / 0.66) 24%, rgb(12 26 18 / 0.2) 38%, rgb(12 26 18 / 0) 46%);
+      pointer-events: none;
+    }
+    .content {
+      position: relative;
+      z-index: 1;
+      gap: 0.75rem;
+      padding: clamp(1.75rem, 3vw, 2.75rem) clamp(2rem, 4vw, 3.5rem) 0;
+    }
+    .title {
+      font-size: clamp(2.6rem, 0.6rem + 3.6vw, 4.4rem);
+      white-space: nowrap;
+    }
+    .lead {
+      max-width: 52ch;
+    }
+    .price-chip {
+      right: 1.5rem;
+      bottom: 1.5rem;
+    }
+  }
+</style>

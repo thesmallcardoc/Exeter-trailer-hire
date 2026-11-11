@@ -1,0 +1,372 @@
+---
+// Reviews: if an Elfsight widget is set in src/data/reviews.ts it is used (loaded lazily);
+// otherwise Google reviews load from /api/google-reviews (Netlify function).
+// Manual reviews are shown too. The section stays hidden until there is something to show.
+import Icon from './Icon.astro';
+import { reviews, reviewsLink, reviewsWidget } from '../data/reviews';
+const hasManual = reviews.length > 0;
+const widget = reviewsWidget.trim();
+const star = 'M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z';
+---
+
+<div data-reviews-sentinel aria-hidden="true"></div>
+<section class="section reviews" id="reviews" aria-labelledby="reviews-title" data-reviews data-mode={widget ? 'widget' : 'api'} hidden={!hasManual && !widget}>
+  <div class="container">
+    <div class="head">
+      <div>
+        <p class="eyebrow">Reviews</p>
+        <h2 id="reviews-title" class="h2">What customers say.</h2>
+      </div>
+      <a class="summary" data-g-summary href="#" target="_blank" rel="noopener" hidden>
+        <span class="g-rating" data-g-rating></span>
+        <span class="stars" data-g-stars aria-hidden="true"></span>
+        <span class="g-count" data-g-count></span>
+      </a>
+    </div>
+
+    {
+      widget && (
+        <div class="widget" data-review-widget>
+          <template set:html={widget} />
+        </div>
+      )
+    }
+
+    <ul class="list" role="list" data-reviews-list>
+      {
+        reviews.map((r) => (
+          <li class="review">
+            {r.rating && (
+              <p class="stars" aria-label={`${r.rating} out of 5 stars`}>
+                {Array.from({ length: 5 }, (_, s) => (
+                  <svg viewBox="0 0 24 24" class:list={['star', { off: s >= r.rating! }]} aria-hidden="true">
+                    <path d={star} />
+                  </svg>
+                ))}
+              </p>
+            )}
+            <blockquote>
+              <p>“{r.text}”</p>
+            </blockquote>
+            <p class="who">
+              <span class="who-text">
+                <strong>{r.name}</strong>
+                {(r.source || r.date) && <span>{[r.source, r.date].filter(Boolean).join(' · ')}</span>}
+              </span>
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="foot">
+      <p class="attrib" data-g-attrib hidden>Reviews from Google</p>
+      <a class="btn btn--ghost more" data-g-more href={reviewsLink || '#'} target="_blank" rel="noopener" hidden={!reviewsLink}>
+        Read more reviews <Icon name="arrow-up-right" />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .reviews {
+    background: var(--sage);
+  }
+  .reviews[hidden] {
+    display: none;
+  }
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem 2rem;
+    margin-bottom: var(--space-l);
+  }
+  .head > div {
+    display: grid;
+    gap: 1rem;
+  }
+  .h2 {
+    font-size: var(--step-4);
+    letter-spacing: -0.035em;
+  }
+  .summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 1.1rem;
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--ink);
+    text-decoration: none;
+    font-size: var(--step--1);
+    transition: box-shadow var(--dur-med) var(--ease-out);
+  }
+  .summary[hidden] {
+    display: none;
+  }
+  .summary:hover {
+    box-shadow: var(--shadow-soft);
+  }
+  .g-rating {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .g-count {
+    color: var(--ink-mute);
+  }
+  .list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  }
+  .review,
+  .list :global(.review) {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+    padding: 1.75rem;
+    border-radius: var(--radius-m);
+    background: var(--paper);
+    animation: rise 600ms var(--ease-out) both;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+  .stars,
+  .reviews :global(.stars) {
+    display: flex;
+    gap: 0.15rem;
+  }
+  .star,
+  .reviews :global(.star) {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: var(--rust);
+  }
+  .star.off,
+  .reviews :global(.star.off) {
+    fill: var(--line-strong);
+  }
+  blockquote p,
+  .list :global(blockquote p) {
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+  .list :global(.clamp) {
+    display: -webkit-box;
+    -webkit-line-clamp: 7;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .who,
+  .list :global(.who) {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: var(--step--1);
+    color: var(--ink-mute);
+  }
+  .list :global(.who img) {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex: none;
+  }
+  .who-text,
+  .list :global(.who-text) {
+    display: grid;
+    gap: 0.1rem;
+  }
+  .who strong,
+  .list :global(.who strong),
+  .list :global(.who a) {
+    color: var(--ink);
+    font-size: var(--step-0);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .list :global(.who a:hover) {
+    text-decoration: underline;
+  }
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .attrib {
+    font-size: var(--step--1);
+    color: var(--ink-mute);
+  }
+  .widget {
+    min-height: 320px; /* reserve space so the page doesn't jump when the widget arrives */
+  }
+  .attrib[hidden],
+  .more[hidden] {
+    display: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .review,
+    .list :global(.review) {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  // Load Google reviews when the visitor scrolls near this part of the page.
+  const section = document.querySelector<HTMLElement>('[data-reviews]');
+  const sentinel = document.querySelector<HTMLElement>('[data-reviews-sentinel]');
+  const STAR = 'M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z';
+
+  interface GReview {
+    author: string;
+    authorUrl: string;
+    photo: string;
+    rating: number;
+    text: string;
+    when: string;
+  }
+  interface GData {
+    configured: boolean;
+    rating: number | null;
+    count: number;
+    url: string;
+    reviews: GReview[];
+  }
+
+  const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string) => {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text) e.textContent = text;
+    return e;
+  };
+
+  const stars = (n: number) => {
+    const p = el('p', 'stars');
+    p.setAttribute('aria-label', `${n} out of 5 stars`);
+    for (let i = 0; i < 5; i++) {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('class', i < Math.round(n) ? 'star' : 'star off');
+      svg.setAttribute('aria-hidden', 'true');
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', STAR);
+      svg.appendChild(path);
+      p.appendChild(svg);
+    }
+    return p;
+  };
+
+  function render(data: GData) {
+    if (!section || !data.reviews?.length) return;
+    const list = section.querySelector('[data-reviews-list]')!;
+    for (const r of data.reviews) {
+      const li = el('li', 'review');
+      li.appendChild(stars(r.rating));
+      const bq = el('blockquote');
+      bq.appendChild(el('p', 'clamp', `“${r.text}”`));
+      li.appendChild(bq);
+      const who = el('p', 'who');
+      if (r.photo) {
+        const img = el('img');
+        img.src = r.photo;
+        img.alt = '';
+        img.width = 40;
+        img.height = 40;
+        img.loading = 'lazy';
+        img.referrerPolicy = 'no-referrer';
+        who.appendChild(img);
+      }
+      const t = el('span', 'who-text');
+      if (r.authorUrl) {
+        const a = el('a', '', r.author);
+        a.href = r.authorUrl;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        t.appendChild(a);
+      } else {
+        t.appendChild(el('strong', '', r.author));
+      }
+      t.appendChild(el('span', '', ['Google', r.when].filter(Boolean).join(' · ')));
+      who.appendChild(t);
+      li.appendChild(who);
+      list.appendChild(li);
+    }
+
+    // Overall rating badge + links
+    if (data.rating && data.count) {
+      const sum = section.querySelector<HTMLAnchorElement>('[data-g-summary]')!;
+      sum.href = data.url || '#';
+      sum.querySelector('[data-g-rating]')!.textContent = data.rating.toFixed(1);
+      sum.querySelector('[data-g-stars]')!.replaceWith(stars(data.rating));
+      sum.querySelector('[data-g-count]')!.textContent = `${data.count} Google review${data.count === 1 ? '' : 's'}`;
+      sum.setAttribute('aria-label', `Rated ${data.rating.toFixed(1)} out of 5 from ${data.count} Google reviews. Read them on Google`);
+      sum.hidden = false;
+    }
+    section.querySelector<HTMLElement>('[data-g-attrib]')!.hidden = false;
+    if (data.url) {
+      const more = section.querySelector<HTMLAnchorElement>('[data-g-more]')!;
+      more.href = data.url;
+      more.hidden = false;
+    }
+    section.hidden = false;
+  }
+
+  // Elfsight (or other) widget: inject its embed code only when needed.
+  function loadWidget() {
+    const box = section?.querySelector<HTMLElement>('[data-review-widget]');
+    const tpl = box?.querySelector('template');
+    if (!box || !tpl) return;
+    const frag = tpl.content.cloneNode(true) as DocumentFragment;
+    // Scripts copied out of a <template> don't run, so recreate them.
+    frag.querySelectorAll('script').forEach((old) => {
+      const s = document.createElement('script');
+      for (const a of Array.from(old.attributes)) s.setAttribute(a.name, a.value);
+      s.textContent = old.textContent;
+      old.replaceWith(s);
+    });
+    tpl.replaceWith(frag);
+  }
+
+  async function load() {
+    if (section?.dataset.mode === 'widget') {
+      loadWidget();
+      return;
+    }
+    try {
+      const res = await fetch('/api/google-reviews', { headers: { Accept: 'application/json' } });
+      if (!res.ok) return;
+      render(await res.json());
+    } catch {
+      /* no reviews shown if the request fails */
+    }
+  }
+
+  if (section && sentinel) {
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            io.disconnect();
+            load();
+          }
+        },
+        { rootMargin: '900px 0px' },
+      );
+      io.observe(sentinel);
+    } else {
+      load();
+    }
+  }
+</script>

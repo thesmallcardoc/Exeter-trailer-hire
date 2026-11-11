@@ -1,0 +1,95 @@
+---
+import { Picture } from 'astro:assets';
+import Icon from './Icon.astro';
+import bg from '../assets/photos/yard-side.jpg'; // IMG_0603
+import { business, whatsappLink } from '../config';
+---
+
+<section class="contact" aria-labelledby="contact-title">
+  <div class="container">
+    <div class="card">
+      <div class="bg parallax" aria-hidden="true">
+        <Picture src={bg} formats={['avif', 'webp']}
+          quality={68} widths={[640, 1100, 1600]} sizes="100vw" alt="" />
+      </div>
+      <div class="inner">
+        <p class="eyebrow light" data-reveal>Ready when you are</p>
+        <h2 id="contact-title" class="h2" data-lines>
+          <span class="line-mask" style="--i:0"><span>Got a car to move?</span></span>
+          <span class="line-mask" style="--i:1"><span>Let’s talk.</span></span>
+        </h2>
+        <div class="ctas" data-reveal style="--i:2">
+          <a class="btn btn--accent" href={business.phoneHref}><Icon name="phone" /> {business.phoneDisplay}</a>
+          {
+            business.whatsapp && (
+              <a class="btn btn--light" href={whatsappLink('Hi, I’d like to hire the car transporter trailer.')} target="_blank" rel="noopener">
+                <Icon name="message" /> WhatsApp us
+              </a>
+            )
+          }
+        </div>
+        <p class="small" data-reveal style="--i:3">
+          Or email <a href={`mailto:${business.email}`}>{business.email}</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact {
+    padding-bottom: var(--space-2xl);
+  }
+  .card {
+    position: relative;
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    isolation: isolate;
+    color: var(--cream);
+    background: var(--forest-deep);
+  }
+  .bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .bg :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgb(20 55 38 / 0.94) 15%, rgb(20 55 38 / 0.72) 60%, rgb(20 55 38 / 0.45));
+  }
+  .inner {
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+    padding: clamp(2.5rem, 6vw, 6rem) clamp(1.5rem, 5vw, 5rem);
+  }
+  .light {
+    color: var(--sage-deep);
+  }
+  .h2 {
+    font-size: var(--step-4);
+    letter-spacing: -0.035em;
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .small {
+    color: rgb(245 240 230 / 0.82);
+    word-break: break-word;
+  }
+  .small a {
+    color: var(--cream);
+  }
+  .card :focus-visible {
+    outline-color: var(--sage-deep);
+  }
+</style>

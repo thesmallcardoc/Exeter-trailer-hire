@@ -1,0 +1,114 @@
+---
+import '@fontsource-variable/bricolage-grotesque/wght.css';
+import '@fontsource-variable/inter/wght.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import MobileBar from '../components/MobileBar.astro';
+import { business, pricing, trailer } from '../config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = `Car Transporter Trailer Hire in Exeter, Devon | ${business.name}`,
+  description = `Moving a car? Hire a 16ft Brian James twin-axle car transporter in Exeter, Devon. Winch and wheel straps included, from £${pricing.day} a day with no booking fee.`,
+  noindex = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, business.siteUrl).href;
+const ogImage = new URL('/og.jpg', business.siteUrl).href;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'AutoRental',
+  name: business.name,
+  url: business.siteUrl,
+  image: ogImage,
+  telephone: '+447391051035',
+  email: business.email,
+  priceRange: '££',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Exeter',
+    addressRegion: 'Devon',
+    addressCountry: 'GB',
+  },
+  areaServed: ['Exeter', 'Devon'],
+  makesOffer: [
+    ['Day hire', pricing.day],
+    ['Weekend hire (Sat–Sun)', pricing.weekend],
+    ['Monday to Friday hire', pricing.weekdays],
+  ].map(([name, price]) => ({
+    '@type': 'Offer',
+    name,
+    price,
+    priceCurrency: 'GBP',
+    itemOffered: { '@type': 'Product', name: `${trailer.make} ${trailer.model}` },
+  })),
+};
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#f5f0e6" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:site_name" content={business.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <MobileBar />
+
+    <script>
+      // Reveal elements as they scroll into view. One observer for the whole page.
+      const els = document.querySelectorAll<HTMLElement>('[data-reveal], [data-lines]');
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce || !('IntersectionObserver' in window)) {
+        els.forEach((el) => el.classList.add('is-in'));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-in');
+                io.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
+        );
+        els.forEach((el) => io.observe(el));
+      }
+    </script>
+  </body>
+</html>

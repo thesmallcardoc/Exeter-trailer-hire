@@ -1,0 +1,134 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { business, whatsappLink } from '../config';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container">
+    <p class="giant" aria-hidden="true">Trailer&nbsp;Hire</p>
+    <div class="cols">
+      <div>
+        <Logo />
+        <p class="tag">A 16ft Brian James car transporter for hire in {business.area}.</p>
+      </div>
+      <div>
+        <h2>Contact</h2>
+        <ul>
+          <li><a href={business.phoneHref}><Icon name="phone" />{business.phoneDisplay}</a></li>
+          {business.whatsapp && <li><a href={whatsappLink()} rel="noopener" target="_blank"><Icon name="message" />WhatsApp</a></li>}
+          <li><a href={`mailto:${business.email}`}><Icon name="mail" />{business.email}</a></li>
+          <li><a href={business.mapsUrl} rel="noopener" target="_blank"><Icon name="pin" />{business.area}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Hire</h2>
+        <ul>
+          <li><a href="/#trailer">The trailer</a></li>
+          <li><a href="/#pricing">Pricing</a></li>
+          <li><a href="/#book">Check availability</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Info</h2>
+        <ul>
+          <li><a href="/hire-terms">Terms of hire</a></li>
+          <li><a href="/privacy">Privacy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="base">
+      <p>© {year} {business.name}. All rights reserved.</p>
+      <p>Exeter, Devon, UK</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--ink);
+    color: rgb(245 240 230 / 0.78);
+    padding: var(--space-xl) 0 calc(6rem + env(safe-area-inset-bottom));
+    overflow: hidden;
+    --logo-bg: var(--ink);
+  }
+  .footer :global(.logo),
+  .footer :global(.logo-text) {
+    color: var(--cream);
+  }
+  .footer :global(.logo-text span) {
+    color: var(--sage-deep);
+  }
+  .giant {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(3.6rem, 16vw, 15rem);
+    line-height: 0.85;
+    letter-spacing: -0.045em;
+    color: rgb(219 228 208 / 0.1);
+    margin-bottom: var(--space-l);
+    white-space: nowrap;
+  }
+  .cols {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+  }
+  .tag {
+    margin-top: 1rem;
+    max-width: 32ch;
+  }
+  h2 {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sage-deep);
+    margin-bottom: 0.75rem;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.15rem;
+  }
+  ul a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 40px;
+    color: var(--cream);
+    text-decoration: none;
+    word-break: break-word;
+    transition: color var(--dur-fast);
+  }
+  ul a:hover {
+    color: var(--sage-deep);
+  }
+  .base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    margin-top: var(--space-l);
+    padding-top: 1.5rem;
+    border-top: 1px solid rgb(245 240 230 / 0.14);
+    font-size: var(--step--1);
+  }
+  .footer :focus-visible {
+    outline-color: var(--sage-deep);
+  }
+  @media (min-width: 720px) {
+    .cols {
+      grid-template-columns: 1.4fr 1.2fr 1fr 1fr;
+    }
+  }
+  @media (min-width: 1024px) {
+    .footer {
+      padding-bottom: var(--space-l);
+    }
+  }
+</style>

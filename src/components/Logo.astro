@@ -1,0 +1,43 @@
+---
+interface Props {
+  class?: string;
+}
+const { class: cls = '' } = Astro.props;
+---
+
+<span class={`logo ${cls}`}>
+  <svg class="logo-mark" viewBox="0 0 56 28" aria-hidden="true" focusable="false">
+    <path d="M3 17.5 14 12" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+    <circle cx="3" cy="17.5" r="2.4" fill="currentColor"></circle>
+    <rect x="13" y="8" width="41" height="6" rx="2" fill="currentColor"></rect>
+    <circle cx="31" cy="19" r="6" fill="currentColor"></circle>
+    <circle cx="44" cy="19" r="6" fill="currentColor"></circle>
+    <circle cx="31" cy="19" r="2.2" fill="var(--logo-bg, #f5f0e6)"></circle>
+    <circle cx="44" cy="19" r="2.2" fill="var(--logo-bg, #f5f0e6)"></circle>
+  </svg>
+  <span class="logo-text"><span>Exeter</span> Trailer Hire</span>
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.12rem;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--forest);
+  }
+  .logo-mark {
+    width: 44px;
+    height: auto;
+  }
+  .logo-text {
+    color: var(--ink);
+  }
+  .logo-text span {
+    color: var(--forest);
+  }
+</style>

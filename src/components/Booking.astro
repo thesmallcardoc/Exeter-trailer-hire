@@ -1,0 +1,941 @@
+---
+import Icon from './Icon.astro';
+import { business, pricing } from '../config';
+
+// Form delivery: Web3Forms when PUBLIC_WEB3FORMS_KEY is set (works on any host, e.g. Cloudflare Pages),
+// otherwise Netlify Forms.
+const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_KEY as string | undefined;
+const provider = web3formsKey ? 'web3forms' : 'netlify';
+const formAttrs =
+  provider === 'web3forms'
+    ? { action: 'https://api.web3forms.com/submit' }
+    : { action: '/thanks', 'data-netlify': 'true', 'netlify-honeypot': 'bot-field' };
+---
+
+<section class="section booking" id="book" aria-labelledby="book-title">
+  <div class="container">
+    <div class="head">
+      <p class="eyebrow" data-reveal>Availability</p>
+      <h2 id="book-title" class="h2" data-lines>
+        <span class="line-mask" style="--i:0"><span>Pick your dates.</span></span>
+      </h2>
+      <p class="lead" data-reveal style="--i:1">
+        Choose a start and end day, see your price, and send us an enquiry. We’ll reply quickly to confirm.
+      </p>
+    </div>
+
+    <div class="layout">
+      <!-- Calendar -->
+      <div class="cal-card" data-reveal="scale">
+        <div class="cal-top">
+          <h3 class="month" data-month aria-live="polite">&nbsp;</h3>
+          <div class="cal-nav">
+            <button type="button" class="cal-arrow" data-cal-prev aria-label="Previous month"><Icon name="chevron-left" /></button>
+            <button type="button" class="cal-arrow" data-cal-next aria-label="Next month"><Icon name="chevron-right" /></button>
+          </div>
+        </div>
+        <div class="weekdays" aria-hidden="true">
+          <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+        </div>
+        <div class="days-wrap">
+          <div class="days" data-days role="group" aria-label="Choose hire dates. Use arrow keys to move between days."></div>
+        </div>
+        <noscript><p class="status">Turn on JavaScript to see the calendar, or use the date boxes in the form.</p></noscript>
+        <ul class="legend" aria-hidden="true">
+          <li><span class="sw sw-free"></span>Available</li>
+          <li><span class="sw sw-booked"></span>Booked</li>
+          <li><span class="sw sw-sel"></span>Your dates</li>
+        </ul>
+        <p class="status" data-cal-status><span class="dot"></span><span data-cal-status-text>Loading availability…</span></p>
+      </div>
+
+      <!-- Enquiry form -->
+      <form
+        class="form"
+        name="enquiry"
+        method="POST"
+        {...formAttrs}
+        data-form
+        data-provider={provider}
+        novalidate
+        data-reveal
+        style="--i:1"
+      >
+        {
+          provider === 'web3forms' ? (
+            <>
+              <input type="hidden" name="access_key" value={web3formsKey} />
+              <input type="hidden" name="subject" value="New trailer hire enquiry" />
+              <input type="hidden" name="from_name" value={`${business.name} website`} />
+              <input type="hidden" name="redirect" value={`${business.siteUrl}/thanks`} />
+              <input type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            </>
+          ) : (
+            <>
+              <input type="hidden" name="form-name" value="enquiry" />
+              <p class="visually-hidden">
+                <label>
+                  Leave this empty: <input name="bot-field" tabindex="-1" autocomplete="off" />
+                </label>
+              </p>
+            </>
+          )
+        }
+        <input type="hidden" name="estimate" data-estimate-field />
+
+        <div class="summary" data-summary aria-live="polite">
+          <div>
+            <p class="sum-label">Your hire</p>
+            <p class="sum-dates" data-sum-dates>Pick dates on the calendar</p>
+          </div>
+          <div class="sum-price">
+            <p class="sum-total" data-sum-total>£–</p>
+            <p class="sum-basis" data-sum-basis>From £{pricing.day} a day</p>
+          </div>
+        </div>
+
+        <div class="row two">
+          <div class="field">
+            <label for="f-start">Start date</label>
+            <input id="f-start" name="start-date" type="date" required data-start aria-describedby="e-start" />
+            <p class="error" id="e-start" data-error-for="f-start"></p>
+          </div>
+          <div class="field">
+            <label for="f-end">End date</label>
+            <input id="f-end" name="end-date" type="date" required data-end aria-describedby="e-end" />
+            <p class="error" id="e-end" data-error-for="f-end"></p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-name">Full name</label>
+          <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="e-name" />
+          <p class="error" id="e-name" data-error-for="f-name"></p>
+        </div>
+
+        <div class="row two">
+          <div class="field">
+            <label for="f-phone">Phone</label>
+            <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required aria-describedby="e-phone" />
+            <p class="error" id="e-phone" data-error-for="f-phone"></p>
+          </div>
+          <div class="field">
+            <label for="f-email">Email <span class="opt">(optional)</span></label>
+            <input id="f-email" name="email" type="email" autocomplete="email" aria-describedby="e-email" />
+            <p class="error" id="e-email" data-error-for="f-email"></p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-vehicle">What are you moving? <span class="opt">(optional)</span></label>
+          <input id="f-vehicle" name="vehicle" type="text" placeholder="e.g. 2012 Ford Focus, non-runner" aria-describedby="h-vehicle" />
+          <p class="hint" id="h-vehicle">Helps us check it fits within the trailer’s weight limit.</p>
+        </div>
+
+        <div class="field">
+          <label for="f-msg">Anything else? <span class="opt">(optional)</span></label>
+          <textarea id="f-msg" name="message" rows="3" placeholder="Collection time, questions…"></textarea>
+        </div>
+
+        <button class="btn btn--accent btn--block submit" type="submit" data-submit>
+          <span class="label">Send enquiry</span>
+          <span class="spinner" aria-hidden="true"></span>
+          <Icon name="arrow-right" />
+        </button>
+        <p class="fine">
+          No payment now. £{pricing.deposit} deposit on confirmation, no booking fee. See our <a href="/privacy">privacy notice</a>.
+        </p>
+        <p class="form-error" data-form-error role="alert" hidden>
+          <Icon name="alert" />
+          <span>Sorry, that didn’t send. Please call <a href={business.phoneHref}>{business.phoneDisplay}</a> or email <a href={`mailto:${business.email}`}>{business.email}</a>.</span>
+        </p>
+      </form>
+
+      <div class="success" data-success hidden tabindex="-1">
+        <span class="tick"><Icon name="check" /></span>
+        <h3>Enquiry sent. Thank you!</h3>
+        <p>We’ll be in touch shortly to confirm your dates. Need an answer faster?</p>
+        <div class="ctas">
+          <a class="btn" href={business.phoneHref}><Icon name="phone" /> Call {business.phoneDisplay}</a>
+          {business.whatsapp && <a class="btn btn--ghost" data-success-wa href="#" target="_blank" rel="noopener"><Icon name="message" /> WhatsApp</a>}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .booking {
+    background: var(--paper);
+    border-block: 1px solid var(--line);
+  }
+  .head {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: var(--space-l);
+  }
+  .h2 {
+    font-size: var(--step-4);
+    letter-spacing: -0.035em;
+  }
+  .layout {
+    display: grid;
+    gap: 1.25rem;
+    align-items: start;
+  }
+
+  /* Calendar */
+  .cal-card {
+    padding: clamp(1rem, 3vw, 2rem);
+    border-radius: var(--radius-l);
+    background: var(--white);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-soft);
+  }
+  .cal-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .month {
+    font-size: var(--step-2);
+  }
+  .cal-nav {
+    display: flex;
+    gap: 0.4rem;
+  }
+  .cal-arrow {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1.5px var(--line-strong);
+    transition: background-color var(--dur-fast), color var(--dur-fast), opacity var(--dur-fast);
+  }
+  .cal-arrow:hover:not(:disabled) {
+    background: var(--ink);
+    color: var(--cream);
+  }
+  .cal-arrow:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  .weekdays,
+  .days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px 0;
+  }
+  .weekdays {
+    margin-bottom: 0.4rem;
+  }
+  .weekdays span {
+    text-align: center;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink-mute);
+    padding-block: 0.4rem;
+  }
+  .days-wrap {
+    overflow: hidden;
+  }
+  .days.slide-next {
+    animation: slide-next 420ms var(--ease-out);
+  }
+  .days.slide-prev {
+    animation: slide-prev 420ms var(--ease-out);
+  }
+  @keyframes slide-next {
+    from {
+      opacity: 0;
+      transform: translateX(24px);
+    }
+  }
+  @keyframes slide-prev {
+    from {
+      opacity: 0;
+      transform: translateX(-24px);
+    }
+  }
+  .days :global(.day) {
+    position: relative;
+    aspect-ratio: 1;
+    min-height: 40px;
+    display: grid;
+    place-items: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    isolation: isolate;
+  }
+  .days :global(.day::before) {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 50%;
+    z-index: -1;
+    transition:
+      background-color var(--dur-fast),
+      transform var(--dur-med) var(--ease-out);
+  }
+  .days :global(.day:not([aria-disabled='true']):not(.is-start):not(.is-end):hover::before) {
+    background: var(--sage);
+  }
+  .days :global(.day.is-today) {
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .days :global(.day[aria-disabled='true']) {
+    color: rgb(22 38 29 / 0.32);
+    cursor: not-allowed;
+  }
+  .days :global(.day.is-booked) {
+    color: rgb(22 38 29 / 0.38);
+    text-decoration: line-through;
+  }
+  .days :global(.day.is-booked::before) {
+    background: repeating-linear-gradient(-45deg, rgb(22 38 29 / 0.06) 0 4px, rgb(22 38 29 / 0.12) 4px 8px);
+  }
+  .days :global(.day.in-range),
+  .days :global(.day.in-preview) {
+    background: var(--sage);
+  }
+  .days :global(.day.in-preview) {
+    background: rgb(219 228 208 / 0.6);
+  }
+  .days :global(.day.is-start),
+  .days :global(.day.is-end) {
+    color: var(--white);
+    font-weight: 700;
+  }
+  .days :global(.day.is-start::before),
+  .days :global(.day.is-end::before) {
+    background: var(--forest);
+    animation: pop 380ms var(--ease-out);
+  }
+  .days :global(.day.is-start.has-end) {
+    background: linear-gradient(90deg, transparent 50%, var(--sage) 50%);
+  }
+  .days :global(.day.is-end:not(.is-start)) {
+    background: linear-gradient(90deg, var(--sage) 50%, transparent 50%);
+  }
+  @keyframes pop {
+    from {
+      transform: scale(0.6);
+    }
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    list-style: none;
+    padding: 1rem 0 0;
+    margin-top: 1rem;
+    border-top: 1px solid var(--line);
+    font-size: var(--step--1);
+    color: var(--ink-mute);
+  }
+  .legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .sw {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+  }
+  .sw-free {
+    box-shadow: inset 0 0 0 1.5px var(--line-strong);
+  }
+  .sw-booked {
+    background: repeating-linear-gradient(-45deg, rgb(22 38 29 / 0.1) 0 3px, rgb(22 38 29 / 0.25) 3px 6px);
+  }
+  .sw-sel {
+    background: var(--forest);
+  }
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    font-size: var(--step--1);
+    color: var(--ink-mute);
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--sage-deep);
+    flex: none;
+  }
+  .status.live .dot {
+    background: #2f9e5b;
+    box-shadow: 0 0 0 0 rgb(47 158 91 / 0.5);
+    animation: pulse 2.2s infinite;
+  }
+  @keyframes pulse {
+    70% {
+      box-shadow: 0 0 0 8px rgb(47 158 91 / 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgb(47 158 91 / 0);
+    }
+  }
+
+  /* Form */
+  .form,
+  .success {
+    display: grid;
+    gap: 1rem;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border-radius: var(--radius-l);
+    background: var(--cream);
+    border: 1px solid var(--line);
+  }
+  .summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+    border-radius: var(--radius-m);
+    background: var(--forest);
+    color: var(--cream);
+  }
+  .sum-label {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+  .sum-dates {
+    font-weight: 600;
+  }
+  .sum-price {
+    text-align: right;
+  }
+  .sum-total {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .sum-total.bump {
+    animation: bump 420ms var(--ease-out);
+  }
+  @keyframes bump {
+    40% {
+      transform: scale(1.08);
+    }
+  }
+  .sum-basis {
+    font-size: 0.8rem;
+    opacity: 0.8;
+  }
+  .row.two {
+    display: grid;
+    gap: 1rem;
+  }
+  @media (min-width: 520px) {
+    .row.two {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .field {
+    display: grid;
+    gap: 0.35rem;
+  }
+  label {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .opt {
+    font-weight: 400;
+    color: var(--ink-mute);
+  }
+  input,
+  textarea {
+    width: 100%;
+    min-height: 50px;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-s);
+    border: 1.5px solid var(--line-strong);
+    background: var(--white);
+    font-size: 16px; /* prevents iOS zoom */
+    transition:
+      border-color var(--dur-fast),
+      box-shadow var(--dur-fast);
+  }
+  textarea {
+    resize: vertical;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: #7a857e;
+  }
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: none;
+    border-color: var(--forest);
+    box-shadow: 0 0 0 4px rgb(31 77 54 / 0.18);
+  }
+  input[aria-invalid='true'] {
+    border-color: var(--danger);
+  }
+  .error {
+    min-height: 0;
+    color: var(--danger);
+    font-size: var(--step--1);
+    font-weight: 500;
+  }
+  .error:empty {
+    display: none;
+  }
+  .hint,
+  .fine {
+    font-size: var(--step--1);
+    color: var(--ink-mute);
+  }
+  .fine a {
+    color: var(--forest);
+  }
+  .submit {
+    margin-top: 0.25rem;
+  }
+  .spinner {
+    display: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgb(255 255 255 / 0.35);
+    border-top-color: var(--white);
+    animation: spin 800ms linear infinite;
+  }
+  .submit.is-loading .spinner {
+    display: block;
+  }
+  .submit.is-loading :global(.icon) {
+    display: none;
+  }
+  .submit:disabled {
+    cursor: progress;
+    opacity: 0.85;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .form-error {
+    display: flex;
+    gap: 0.6rem;
+    padding: 0.9rem 1rem;
+    border-radius: var(--radius-s);
+    background: #fdecea;
+    color: #7a1a12;
+    font-size: var(--step--1);
+  }
+  .form-error[hidden] {
+    display: none;
+  }
+  .form-error a {
+    color: inherit;
+    font-weight: 600;
+  }
+  .success {
+    justify-items: start;
+    align-content: center;
+    min-height: 420px;
+    animation: rise 700ms var(--ease-out);
+  }
+  .form[hidden],
+  .success[hidden] {
+    display: none;
+  }
+  .success:focus {
+    outline: none;
+  }
+  .success h3 {
+    font-size: var(--step-3);
+  }
+  .success p {
+    color: var(--ink-soft);
+  }
+  .tick {
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--forest);
+    color: var(--cream);
+    animation: pop 600ms var(--ease-out);
+  }
+  .tick :global(.icon) {
+    width: 30px;
+    height: 30px;
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+  }
+  @media (min-width: 960px) {
+    .layout {
+      grid-template-columns: 1fr 1.05fr;
+      gap: 1.5rem;
+    }
+    .cal-card {
+      position: sticky;
+      top: calc(var(--header-h) + 1.5rem);
+    }
+  }
+</style>
+
+<script>
+  import { estimate, parseISODate, toISODate, addDays, daysBetween } from '../lib/pricing';
+  import { pricing, whatsappLink } from '../config';
+
+  const $ = <T extends HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
+  const daysEl = $('[data-days]');
+  const monthEl = $('[data-month]');
+  const prevBtn = $<HTMLButtonElement>('[data-cal-prev]');
+  const nextBtn = $<HTMLButtonElement>('[data-cal-next]');
+  const statusEl = $('[data-cal-status]');
+  const statusText = $('[data-cal-status-text]');
+  const startInput = $<HTMLInputElement>('[data-start]');
+  const endInput = $<HTMLInputElement>('[data-end]');
+  const sumDates = $('[data-sum-dates]');
+  const sumTotal = $('[data-sum-total]');
+  const sumBasis = $('[data-sum-basis]');
+  const estimateField = $<HTMLInputElement>('[data-estimate-field]');
+  const form = $<HTMLFormElement>('[data-form]');
+
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const lastDay = addDays(today, 365);
+  const firstMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const lastMonth = new Date(lastDay.getFullYear(), lastDay.getMonth(), 1);
+
+  let view = new Date(firstMonth);
+  let start: Date | null = null;
+  let end: Date | null = null;
+  let focusDate = today;
+  let hoverDate: Date | null = null;
+  const booked = new Set<string>();
+
+  const fmtMonth = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' });
+  const fmtDay = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  const fmtLong = new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const same = (a: Date | null, b: Date | null) => !!a && !!b && a.getTime() === b.getTime();
+  const isBooked = (d: Date) => booked.has(toISODate(d));
+  const unavailable = (d: Date) => d < today || d > lastDay || isBooked(d);
+  const rangeHasBooked = (a: Date, b: Date) => {
+    for (let d = a; d <= b; d = addDays(d, 1)) if (isBooked(d)) return true;
+    return false;
+  };
+
+  startInput.min = endInput.min = toISODate(today);
+  startInput.max = endInput.max = toISODate(lastDay);
+
+  function render(direction?: 'next' | 'prev') {
+    monthEl.textContent = fmtMonth.format(view);
+    prevBtn.disabled = view <= firstMonth;
+    nextBtn.disabled = view >= lastMonth;
+
+    const y = view.getFullYear();
+    const m = view.getMonth();
+    const lead = (new Date(y, m, 1).getDay() + 6) % 7; // Monday first
+    const count = new Date(y, m + 1, 0).getDate();
+    if (focusDate.getMonth() !== m || focusDate.getFullYear() !== y) {
+      focusDate = new Date(y, m, 1) < today ? today : new Date(y, m, 1);
+    }
+    const previewEnd = start && !end && hoverDate && hoverDate > start ? hoverDate : null;
+
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < lead; i++) frag.appendChild(document.createElement('span'));
+    for (let day = 1; day <= count; day++) {
+      const d = new Date(y, m, day);
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'day';
+      b.textContent = String(day);
+      b.dataset.date = toISODate(d);
+      b.tabIndex = same(d, focusDate) ? 0 : -1;
+      const off = unavailable(d);
+      if (off) b.setAttribute('aria-disabled', 'true');
+      if (isBooked(d)) b.classList.add('is-booked');
+      if (same(d, today)) b.classList.add('is-today');
+      const isStart = same(d, start);
+      const isEnd = same(d, end);
+      if (isStart) b.classList.add('is-start');
+      if (isEnd) b.classList.add('is-end');
+      if (isStart && end && !same(start, end)) b.classList.add('has-end');
+      if (start && end && d > start && d < end) b.classList.add('in-range');
+      if (start && previewEnd && d > start && d <= previewEnd) b.classList.add('in-preview');
+      b.setAttribute('aria-pressed', String(isStart || isEnd || (!!start && !!end && d > start && d < end)));
+      b.setAttribute(
+        'aria-label',
+        `${fmtLong.format(d)}${isBooked(d) ? ', booked' : d < today ? ', unavailable' : ''}${isStart ? ', start date' : ''}${isEnd ? ', end date' : ''}`,
+      );
+      frag.appendChild(b);
+    }
+    daysEl.replaceChildren(frag);
+    if (direction) {
+      daysEl.classList.remove('slide-next', 'slide-prev');
+      void daysEl.offsetWidth;
+      daysEl.classList.add(`slide-${direction}`);
+    }
+  }
+
+  function updateSummary() {
+    startInput.value = start ? toISODate(start) : '';
+    endInput.value = end ? toISODate(end) : start ? toISODate(start) : '';
+    if (!start) {
+      sumDates.textContent = 'Pick dates on the calendar';
+      sumTotal.textContent = '£–';
+      sumBasis.textContent = `From £${pricing.day} a day`;
+      estimateField.value = '';
+      return;
+    }
+    const e = end ?? start;
+    const est = estimate(start, e);
+    const n = daysBetween(start, e);
+    sumDates.textContent = same(start, e) ? `${fmtDay.format(start)} · 1 day` : `${fmtDay.format(start)} – ${fmtDay.format(e)} · ${n} days`;
+    const newTotal = `£${est.total}`;
+    if (sumTotal.textContent !== newTotal) {
+      sumTotal.textContent = newTotal;
+      sumTotal.classList.remove('bump');
+      void sumTotal.offsetWidth;
+      sumTotal.classList.add('bump');
+    }
+    sumBasis.textContent = `Estimate · ${est.basis}`;
+    estimateField.value = `£${est.total} (${est.basis}, ${n} day${n > 1 ? 's' : ''})`;
+    clearError(startInput);
+    clearError(endInput);
+  }
+
+  function pick(d: Date) {
+    if (unavailable(d)) return;
+    if (!start || end || d < start) {
+      start = d;
+      end = null;
+    } else if (rangeHasBooked(start, d)) {
+      start = d;
+      end = null;
+      setStatusNote('Those dates overlap a booking, so we’ve started a new selection.');
+    } else {
+      end = d;
+    }
+    focusDate = d;
+    hoverDate = null;
+    render();
+    updateSummary();
+    daysEl.querySelector<HTMLButtonElement>(`[data-date="${toISODate(d)}"]`)?.focus({ preventScroll: true });
+  }
+
+  daysEl.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('.day');
+    if (b) pick(parseISODate(b.dataset.date!));
+  });
+  // Range preview while hovering (mouse only)
+  daysEl.addEventListener('pointerover', (e) => {
+    if (e.pointerType !== 'mouse' || !start || end) return;
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('.day');
+    if (!b) return;
+    const d = parseISODate(b.dataset.date!);
+    if (same(d, hoverDate)) return;
+    hoverDate = d;
+    daysEl.querySelectorAll<HTMLElement>('.day').forEach((el) => {
+      const x = parseISODate(el.dataset.date!);
+      el.classList.toggle('in-preview', !!start && x > start && x <= d);
+    });
+  });
+  daysEl.addEventListener('pointerleave', () => {
+    hoverDate = null;
+    daysEl.querySelectorAll('.in-preview').forEach((el) => el.classList.remove('in-preview'));
+  });
+
+  // Keyboard: arrows move by day/week, Home/End jump to week edges, PageUp/Down change month.
+  daysEl.addEventListener('keydown', (e) => {
+    const moves: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
+    let next: Date | null = null;
+    if (e.key in moves) next = addDays(focusDate, moves[e.key]);
+    else if (e.key === 'Home') next = addDays(focusDate, -((focusDate.getDay() + 6) % 7));
+    else if (e.key === 'End') next = addDays(focusDate, 6 - ((focusDate.getDay() + 6) % 7));
+    else if (e.key === 'PageUp') next = new Date(focusDate.getFullYear(), focusDate.getMonth() - 1, focusDate.getDate());
+    else if (e.key === 'PageDown') next = new Date(focusDate.getFullYear(), focusDate.getMonth() + 1, focusDate.getDate());
+    if (!next) return;
+    e.preventDefault();
+    if (next < today) next = today;
+    if (next > lastDay) next = lastDay;
+    const dir = next.getMonth() !== view.getMonth() || next.getFullYear() !== view.getFullYear() ? (next > focusDate ? 'next' : 'prev') : undefined;
+    focusDate = next;
+    if (dir) view = new Date(next.getFullYear(), next.getMonth(), 1);
+    render(dir);
+    daysEl.querySelector<HTMLButtonElement>(`[data-date="${toISODate(next)}"]`)?.focus({ preventScroll: true });
+  });
+
+  prevBtn.addEventListener('click', () => {
+    view = new Date(view.getFullYear(), view.getMonth() - 1, 1);
+    render('prev');
+  });
+  nextBtn.addEventListener('click', () => {
+    view = new Date(view.getFullYear(), view.getMonth() + 1, 1);
+    render('next');
+  });
+
+  // Keep the native date inputs and the calendar in sync
+  const fromInputs = () => {
+    const s = startInput.value ? parseISODate(startInput.value) : null;
+    let e = endInput.value ? parseISODate(endInput.value) : null;
+    if (s && e && e < s) e = null;
+    start = s;
+    end = e;
+    if (s) view = new Date(s.getFullYear(), s.getMonth(), 1);
+    render();
+    updateSummary();
+  };
+  startInput.addEventListener('change', fromInputs);
+  endInput.addEventListener('change', fromInputs);
+
+  // ── Google Calendar availability ──────────────────────────
+  let baseStatus = '';
+  function setStatus(text: string, live = false) {
+    baseStatus = text;
+    statusText.textContent = text;
+    statusEl.classList.toggle('live', live);
+  }
+  function setStatusNote(text: string) {
+    statusText.textContent = text;
+    setTimeout(() => (statusText.textContent = baseStatus), 5000);
+  }
+
+  async function loadAvailability() {
+    const id = import.meta.env.PUBLIC_GCAL_ID;
+    const key = import.meta.env.PUBLIC_GCAL_KEY;
+    if (!id || !key) {
+      setStatus('Pick your dates and we’ll confirm availability when we reply.');
+      return;
+    }
+    const params = new URLSearchParams({
+      key,
+      timeMin: today.toISOString(),
+      timeMax: addDays(lastDay, 1).toISOString(),
+      singleEvents: 'true',
+      maxResults: '2500',
+      fields: 'items(start,end,status,transparency)', // dates only, never event titles
+    });
+    try {
+      const res = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(id)}/events?${params}`);
+      if (!res.ok) throw new Error(String(res.status));
+      const data: { items?: Array<{ status?: string; transparency?: string; start: { date?: string; dateTime?: string }; end: { date?: string; dateTime?: string } }> } =
+        await res.json();
+      for (const ev of data.items ?? []) {
+        if (ev.status === 'cancelled' || ev.transparency === 'transparent') continue;
+        if (ev.start.date && ev.end.date) {
+          // All-day events: end date is exclusive
+          for (let d = parseISODate(ev.start.date); d < parseISODate(ev.end.date); d = addDays(d, 1)) booked.add(toISODate(d));
+        } else if (ev.start.dateTime && ev.end.dateTime) {
+          const s = new Date(ev.start.dateTime);
+          const e = new Date(new Date(ev.end.dateTime).getTime() - 1);
+          for (let d = new Date(s.getFullYear(), s.getMonth(), s.getDate()); d <= e; d = addDays(d, 1)) booked.add(toISODate(d));
+        }
+      }
+      if (start && (isBooked(start) || (end && rangeHasBooked(start, end)))) {
+        start = end = null;
+        updateSummary();
+      }
+      render();
+      setStatus('Live availability. Booked days are crossed out.', true);
+    } catch {
+      setStatus('Couldn’t load live availability. We’ll confirm your dates when we reply.');
+    }
+  }
+
+  // ── Form validation & submit ──────────────────────────────
+  function showError(input: HTMLInputElement, msg: string) {
+    input.setAttribute('aria-invalid', 'true');
+    const el = document.querySelector<HTMLElement>(`[data-error-for="${input.id}"]`);
+    if (el) el.textContent = msg;
+  }
+  function clearError(input: HTMLInputElement) {
+    input.removeAttribute('aria-invalid');
+    const el = document.querySelector<HTMLElement>(`[data-error-for="${input.id}"]`);
+    if (el) el.textContent = '';
+  }
+  form.querySelectorAll<HTMLInputElement>('input').forEach((i) => i.addEventListener('input', () => clearError(i)));
+
+  function validate() {
+    const errs: [HTMLInputElement, string][] = [];
+    const name = form.elements.namedItem('name') as HTMLInputElement;
+    const phone = form.elements.namedItem('phone') as HTMLInputElement;
+    const email = form.elements.namedItem('email') as HTMLInputElement;
+    form.querySelectorAll<HTMLInputElement>('input[id]').forEach(clearError);
+    if (!startInput.value) errs.push([startInput, 'Choose a start date on the calendar or here.']);
+    else if (parseISODate(startInput.value) < today) errs.push([startInput, 'The start date can’t be in the past.']);
+    if (!endInput.value) errs.push([endInput, 'Choose an end date.']);
+    else if (startInput.value && endInput.value < startInput.value) errs.push([endInput, 'The end date must be on or after the start date.']);
+    if (name.value.trim().length < 2) errs.push([name, 'Enter your name.']);
+    if (phone.value.replace(/[^\d+]/g, '').length < 10) errs.push([phone, 'Enter a phone number we can reach you on.']);
+    if (email.value && !email.validity.valid) errs.push([email, 'Check your email address, e.g. name@example.com.']);
+    errs.forEach(([i, m]) => showError(i, m));
+    if (errs.length) errs[0][0].focus();
+    return errs.length === 0;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errorBox = $('[data-form-error]');
+    errorBox.hidden = true;
+    if (!validate()) return;
+    if (!start && startInput.value) fromInputs();
+    const btn = $<HTMLButtonElement>('[data-submit]');
+    btn.disabled = true;
+    btn.classList.add('is-loading');
+    btn.querySelector('.label')!.textContent = 'Sending…';
+    try {
+      const data = new FormData(form);
+      const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
+      if (isLocal) {
+        await new Promise((r) => setTimeout(r, 900)); // don't send real enquiries while developing
+      } else if (form.dataset.provider === 'web3forms') {
+        data.delete('redirect'); // only used by the no-JavaScript fallback
+        const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', headers: { Accept: 'application/json' }, body: data });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok || !json.success) throw new Error(String(res.status));
+      } else {
+        const body = new URLSearchParams(data as unknown as Record<string, string>).toString();
+        const res = await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });
+        if (!res.ok) throw new Error(String(res.status));
+      }
+      const success = $('[data-success]');
+      const wa = success.querySelector<HTMLAnchorElement>('[data-success-wa]');
+      if (wa) wa.href = whatsappLink(`Hi, I’ve just sent an enquiry for the trailer: ${sumDates.textContent}. Name: ${(form.elements.namedItem('name') as HTMLInputElement).value}`);
+      form.hidden = true;
+      success.hidden = false;
+      success.focus();
+    } catch {
+      errorBox.hidden = false;
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('is-loading');
+      btn.querySelector('.label')!.textContent = 'Send enquiry';
+    }
+  });
+
+  render();
+  updateSummary();
+  loadAvailability();
+</script>

@@ -1,0 +1,42 @@
+---
+import Prose from '../layouts/Prose.astro';
+import { business } from '../config';
+---
+
+<Prose
+  title={`Privacy Notice | ${business.name}`}
+  heading="Privacy notice"
+  description={`How ${business.name} uses the information you send us.`}
+  updated="10 November 2026"
+>
+  <p>{business.name} is based in {business.area}. This notice explains what we collect through this website and how we use it, in line with UK GDPR.</p>
+
+  <h2>What we collect</h2>
+  <p>When you send an enquiry we receive the details you enter: your name, phone number, email address (if given), hire dates, and anything you tell us about the vehicle or your hire.</p>
+
+  <h2>Why we use it</h2>
+  <p>Only to reply to your enquiry, arrange and manage your hire, and keep the records we need for our business. Our lawful basis is taking steps at your request before entering into a contract with you.</p>
+
+  <h2>Who handles it</h2>
+  <p>
+    Our website is hosted by Cloudflare. Enquiries are delivered to our email by Web3Forms, a form-handling service. The availability calendar is loaded from Google Calendar,
+    so Google may see your device’s IP address when the page loads. We never sell your data or use it for marketing.
+  </p>
+
+  <h2>Cookies</h2>
+  <p>
+    This site doesn’t use tracking or advertising cookies. Our Google reviews are shown using a widget from Elfsight, which
+    loads when you scroll to the reviews section and may set its own cookies and receive your device’s IP address. See
+    <a href="https://elfsight.com/privacy-policy/" rel="noopener">Elfsight’s privacy policy</a> for details.
+  </p>
+
+  <h2>How long we keep it</h2>
+  <p>Enquiries that don’t become a booking are deleted within 12 months. Hire records are kept for up to 6 years for accounting purposes.</p>
+
+  <h2>Your rights</h2>
+  <p>
+    You can ask to see, correct or delete the information we hold about you. Contact <a href={`mailto:${business.email}`}>{business.email}</a> or
+    call <a href={business.phoneHref}>{business.phoneDisplay}</a>. If you’re unhappy with how we’ve handled your data, you can complain to the
+    Information Commissioner’s Office at <a href="https://ico.org.uk" rel="noopener">ico.org.uk</a>.
+  </p>
+</Prose>

@@ -1,0 +1,8 @@
+---
+import Prose from '../layouts/Prose.astro';
+import { business } from '../config';
+---
+
+<Prose title={`Page not found | ${business.name}`} heading="Wrong turn." description="Page not found." noindex>
+  <p>We couldn’t find that page. Head back to the <a href="/">home page</a> or call <a href={business.phoneHref}>{business.phoneDisplay}</a>.</p>
+</Prose>

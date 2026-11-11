@@ -1,0 +1,195 @@
+---
+import { Picture } from 'astro:assets';
+import Icon from './Icon.astro';
+import yard from '../assets/photos/ramps-2.jpg'; // IMG_0608
+import ramps from '../assets/photos/deck-length.jpg'; // IMG_0609
+import { trailer } from '../config';
+
+const kg = (n: number) => `${n.toLocaleString('en-GB')} kg`;
+const specs = [
+  { icon: 'ruler', label: 'Bed length', value: '16 ft (4.9 m)' },
+  { icon: 'wheel', label: 'Axles', value: 'Twin axle, braked' },
+  { icon: 'weight', label: 'Max gross weight', value: kg(trailer.grossWeightKg) },
+  { icon: 'car', label: 'Max load', value: `${kg(trailer.payloadKg)} approx.` },
+  { icon: 'layers', label: 'Trailer weight', value: kg(trailer.unladenWeightKg) },
+  { icon: 'ramp', label: 'Loading', value: 'Slide-out ramps' },
+  { icon: 'wrench', label: 'Included', value: trailer.included.join(' & ') },
+  { icon: 'shield', label: 'Build', value: 'Galvanised steel chassis' },
+] as const;
+
+const uses = ['Cars & project cars', 'Classic & track cars', 'Broken-down vehicles', 'Small tractors & mowers', 'Quads & buggies'];
+---
+
+<section class="section trailer" id="trailer" aria-labelledby="trailer-title">
+  <div class="container grid">
+    <div class="copy">
+      <p class="eyebrow" data-reveal>The trailer</p>
+      <h2 id="trailer-title" class="h2" data-lines>
+        <span class="line-mask" style="--i:0"><span>Built by Brian James.</span></span>
+        <span class="line-mask" style="--i:1"><span>Ready for your car.</span></span>
+      </h2>
+      <p class="lead" data-reveal style="--i:2">
+        A proper 16ft twin-axle car transporter from one of Britain’s best-known trailer makers. Long enough for most cars,
+        braked on both axles, and it comes with a manual winch and wheel straps, so you have what you need to load up and go.
+      </p>
+
+      <dl class="specs">
+        {
+          specs.map((s, i) => (
+            <div class="spec" data-reveal style={`--i:${i % 4}`}>
+              <dt>
+                <Icon name={s.icon} />
+                {s.label}
+              </dt>
+              <dd>{s.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <div class="uses" data-reveal>
+        <h3>Great for</h3>
+        <ul>{uses.map((u) => <li><Icon name="check" />{u}</li>)}</ul>
+      </div>
+    </div>
+
+    <div class="photos">
+      <figure class="ph" data-reveal="fade">
+        <Picture
+          src={yard}
+          formats={['avif', 'webp']}
+          quality={82}
+          widths={[600, 900, 1200, 1600, 2000]}
+          sizes="(min-width: 1320px) 600px, (min-width: 1024px) 45vw, calc(100vw - 2rem)"
+          alt="The trailer deck with both loading ramps stored on top and wheel straps along each side"
+        />
+      </figure>
+      <figure class="ph" data-reveal="fade" style="--i:2">
+        <Picture
+          src={ramps}
+          formats={['avif', 'webp']}
+          quality={82}
+          widths={[600, 900, 1200, 1600, 2000]}
+          sizes="(min-width: 1320px) 600px, (min-width: 1024px) 45vw, calc(100vw - 2rem)"
+          alt="Looking down the length of the 16ft deck towards the hitch, with the ramps in place"
+        />
+      </figure>
+    </div>
+  </div>
+</section>
+
+<style>
+  .trailer {
+    padding-top: var(--space-xl); /* sits right under the hero, so a smaller top gap */
+  }
+  .grid {
+    display: grid;
+    gap: var(--space-xl);
+  }
+  .copy {
+    display: grid;
+    gap: 1.5rem;
+    align-content: start;
+  }
+  .h2 {
+    font-size: var(--step-4);
+    letter-spacing: -0.035em;
+  }
+  .specs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 8 specs → 4 full rows, never an empty cell */
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    margin-top: 0.5rem;
+  }
+  .spec {
+    background: var(--paper);
+    padding: 1.1rem 1.2rem;
+    transition: background-color var(--dur-med);
+  }
+  .spec:hover {
+    background: var(--white);
+  }
+  dt {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--step--1);
+    color: var(--ink-mute);
+  }
+  dt :global(.icon) {
+    color: var(--forest);
+  }
+  dd {
+    margin-top: 0.3rem;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .uses h3 {
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 0.75rem;
+  }
+  .uses ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .uses li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    background: var(--sage);
+    font-size: var(--step--1);
+    font-weight: 500;
+  }
+  .uses li :global(.icon) {
+    width: 1rem;
+    height: 1rem;
+    color: var(--forest);
+  }
+  /* Photos keep their natural 4:3 shape, so nothing is cropped */
+  .photos {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+  }
+  .ph {
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    background: var(--sage);
+    aspect-ratio: 4 / 3;
+  }
+  .ph :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .photos {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 1024px) {
+    .grid {
+      grid-template-columns: 1.1fr 1fr;
+      align-items: start;
+    }
+    .photos {
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
+    }
+  }
+</style>

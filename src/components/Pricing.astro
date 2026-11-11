@@ -1,0 +1,178 @@
+---
+import Icon from './Icon.astro';
+import { pricing, trailer } from '../config';
+
+const plans = [
+  { name: 'Day', price: pricing.day, note: 'Any single day', featured: false },
+  { name: 'Weekend', price: pricing.weekend, note: 'Saturday & Sunday', featured: false },
+  { name: 'Mon – Fri', price: pricing.weekdays, note: 'Five working days', featured: true },
+];
+---
+
+<section class="section pricing" id="pricing" aria-labelledby="pricing-title">
+  <div class="container">
+    <div class="head">
+      <p class="eyebrow" data-reveal>Pricing</p>
+      <h2 id="pricing-title" class="h2" data-lines>
+        <span class="line-mask" style="--i:0"><span>Simple prices.</span></span>
+        <span class="line-mask" style="--i:1"><span>No booking fee.</span></span>
+      </h2>
+    </div>
+
+    <div class="plans">
+      {
+        plans.map((p, i) => (
+          <article class:list={['plan', { featured: p.featured }]} data-reveal style={`--i:${i}`}>
+            {p.featured && <span class="tag">Best value</span>}
+            <h3>{p.name}</h3>
+            <p class="price">
+              <span class="cur">£</span>
+              {p.price}
+            </p>
+            <p class="note">{p.note}</p>
+            <a class:list={['btn btn--block', p.featured ? 'btn--light' : 'btn--ghost']} href="#book">
+              Check dates <Icon name="arrow-right" />
+            </a>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="extras">
+      <div class="extra" data-reveal>
+        <Icon name="plus" />
+        <p><strong>£{pricing.extraDay} per extra day</strong> on top of any rate.</p>
+      </div>
+      <div class="extra" data-reveal style="--i:1">
+        <Icon name="shield" />
+        <p><strong>£{pricing.deposit} deposit</strong>, returned when the trailer comes back on time.</p>
+      </div>
+      <div class="extra" data-reveal style="--i:2">
+        <Icon name="wrench" />
+        <p><strong>{trailer.included.join(' & ')}</strong> included with every hire.</p>
+      </div>
+      <div class="extra" data-reveal style="--i:3">
+        <Icon name="calendar" />
+        <p><strong>Need it for longer?</strong> Ask about weekly and monthly rates.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .head {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: var(--space-l);
+  }
+  .h2 {
+    font-size: var(--step-4);
+    letter-spacing: -0.035em;
+  }
+  .plans {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  }
+  .plan {
+    position: relative;
+    display: grid;
+    gap: 0.5rem;
+    padding: 2rem;
+    border-radius: var(--radius-l);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    transition:
+      transform var(--dur-med) var(--ease-out),
+      box-shadow var(--dur-med) var(--ease-out);
+  }
+  @media (hover: hover) {
+    .plan:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lift);
+    }
+  }
+  .plan.featured {
+    background: var(--forest);
+    color: var(--cream);
+    border-color: transparent;
+  }
+  .plan.featured .note {
+    color: rgb(245 240 230 / 0.8);
+  }
+  .plan.featured :focus-visible {
+    outline-color: var(--sage-deep);
+  }
+  .tag {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: var(--rust);
+    color: var(--white);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  h3 {
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .price {
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 2.5rem + 4vw, 5.5rem);
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    margin-top: 0.5rem;
+  }
+  .cur {
+    font-size: 0.5em;
+    vertical-align: 0.7em;
+    margin-right: 0.05em;
+  }
+  .note {
+    color: var(--ink-mute);
+    margin-bottom: 1.25rem;
+  }
+  .extras {
+    display: grid;
+    gap: 1px;
+    grid-template-columns: 1fr;
+    margin-top: 1rem;
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--line);
+  }
+  @media (min-width: 600px) {
+    .extras {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1100px) {
+    .extras {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .extra {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+    padding: 1.25rem 1.4rem;
+    background: var(--cream);
+  }
+  .extra :global(.icon) {
+    color: var(--forest);
+    margin-top: 0.15rem;
+  }
+  .extra p {
+    color: var(--ink-soft);
+  }
+  .extra strong {
+    color: var(--ink);
+  }
+</style>

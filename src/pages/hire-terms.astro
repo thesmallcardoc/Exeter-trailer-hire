@@ -1,0 +1,62 @@
+---
+import Prose from '../layouts/Prose.astro';
+import { business, pricing, trailer } from '../config';
+---
+
+<Prose
+  title={`Terms of Hire | ${business.name}`}
+  heading="Terms of hire"
+  description={`The terms for hiring the ${trailer.model} from ${business.name}.`}
+  updated="10 November 2026"
+>
+  <p>These terms apply to every hire of the trailer from {business.name} ("we", "us"). By booking, you ("the hirer") agree to them.</p>
+
+  <h2>1. Booking and payment</h2>
+  <ol>
+    <li>A booking is confirmed once we have agreed your dates and received the £{pricing.deposit} deposit. There is no booking fee.</li>
+    <li>
+      Hire charges are: £{pricing.day} for one day, £{pricing.weekend} for a weekend (Saturday and Sunday), £{pricing.weekdays} for
+      Monday to Friday, and £{pricing.extraDay} for each extra day. The hire charge is paid on or before collection.
+    </li>
+  </ol>
+
+  <h2>2. Deposit</h2>
+  <ol>
+    <li>The £{pricing.deposit} deposit is returned when the trailer is returned on time on the agreed date.</li>
+    <li>If the trailer is returned late, or with damage or missing equipment, we may keep some or all of the deposit to cover extra hire days, repairs or replacement.</li>
+  </ol>
+
+  <h2>3. Your responsibilities</h2>
+  <ol>
+    <li>You must hold a full, valid driving licence that allows you to tow the trailer, and your vehicle must be legally able to tow its loaded weight.</li>
+    <li>Your motor insurance must cover you for towing a trailer.</li>
+    <li>
+      Do not exceed the trailer’s maximum gross weight of {trailer.grossWeightKg.toLocaleString('en-GB')} kg (a load of about
+      {' '}{trailer.payloadKg.toLocaleString('en-GB')} kg). Secure every load with the wheel straps supplied.
+    </li>
+    <li>Check the coupling, lights and tyres before every journey, and follow the Highway Code and towing speed limits.</li>
+    <li>
+      You are responsible for the trailer and its equipment (including the winch and wheel straps) from collection until return, and for any
+      fines, penalties or charges incurred during the hire.
+    </li>
+    <li>Do not sub-hire or lend the trailer to anyone else.</li>
+  </ol>
+
+  <h2>4. Faults and breakdowns</h2>
+  <p>
+    If the trailer develops a fault or is involved in an accident, stop when it is safe to do so and call us on
+    <a href={business.phoneHref}>{business.phoneDisplay}</a>. Do not carry out repairs without our agreement.
+  </p>
+
+  <h2>5. Return</h2>
+  <p>Return the trailer to the agreed place in {business.area}, at the agreed time, in the same condition you received it. Remove any debris from the deck.</p>
+
+  <h2>6. Liability</h2>
+  <p>
+    We are not responsible for loss of or damage to any vehicle or goods carried on the trailer, except where caused by our negligence. Nothing in
+    these terms limits liability that cannot be limited by law.
+  </p>
+
+  <h2>Questions</h2>
+  <p>Call <a href={business.phoneHref}>{business.phoneDisplay}</a> or email <a href={`mailto:${business.email}`}>{business.email}</a>.</p>
+</Prose>

@@ -1,0 +1,107 @@
+---
+import Icon from './Icon.astro';
+import { pricing } from '../config';
+const steps = [
+  { icon: 'calendar', title: 'Pick your dates', body: 'Check the calendar below and send an enquiry, or just call or WhatsApp us.' },
+  { icon: 'check', title: 'We confirm', body: `We confirm the booking and take a £${pricing.deposit} deposit. There’s no booking fee.` },
+  { icon: 'key', title: 'Collect in Exeter', body: 'Pick up at the time we agree. We’ll show you the ramps, winch and straps.' },
+  { icon: 'arrow-up-right', title: 'Return on time', body: 'Bring the trailer back on time and your deposit comes straight back to you.' },
+] as const;
+---
+
+<section class="section steps" aria-labelledby="steps-title">
+  <div class="container">
+    <div class="head">
+      <p class="eyebrow" data-reveal>How it works</p>
+      <h2 id="steps-title" class="h2" data-lines>
+        <span class="line-mask"><span>Four simple steps.</span></span>
+      </h2>
+    </div>
+    <ol class="list">
+      {
+        steps.map((s, i) => (
+          <li class="step" data-reveal style={`--i:${i}`}>
+            <span class="num">0{i + 1}</span>
+            <span class="ico"><Icon name={s.icon} /></span>
+            <h3>{s.title}</h3>
+            <p>{s.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .steps {
+    background: var(--sage);
+  }
+  .head {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: var(--space-l);
+  }
+  .h2 {
+    font-size: var(--step-4);
+    letter-spacing: -0.035em;
+  }
+  .list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+  @media (min-width: 600px) {
+    .list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1100px) {
+    .list {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .step {
+    position: relative;
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    padding: 1.75rem;
+    min-height: 240px;
+    border-radius: var(--radius-m);
+    background: var(--paper);
+    transition:
+      transform var(--dur-med) var(--ease-out),
+      box-shadow var(--dur-med) var(--ease-out);
+  }
+  @media (hover: hover) {
+    .step:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-soft);
+    }
+  }
+  .num {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.75rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--ink-mute);
+  }
+  .ico {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--forest);
+    color: var(--cream);
+    margin-bottom: 0.75rem;
+  }
+  h3 {
+    font-size: var(--step-2);
+  }
+  p {
+    color: var(--ink-soft);
+  }
+</style>

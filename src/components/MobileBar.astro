@@ -1,0 +1,87 @@
+---
+import Icon from './Icon.astro';
+import { business, whatsappLink } from '../config';
+---
+
+<div class="mobile-bar" data-mobile-bar>
+  <a href={business.phoneHref} class="mb-btn"><Icon name="phone" /><span>Call</span></a>
+  {
+    business.whatsapp && (
+      <a href={whatsappLink('Hi, I’d like to hire the car transporter trailer.')} class="mb-btn" target="_blank" rel="noopener">
+        <Icon name="message" />
+        <span>WhatsApp</span>
+      </a>
+    )
+  }
+  <a href="/#book" class="mb-btn mb-primary"><Icon name="calendar" /><span>Book</span></a>
+</div>
+
+<style>
+  .mobile-bar {
+    position: fixed;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    z-index: 40;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 0.4rem;
+    padding: 0.4rem;
+    border-radius: 999px;
+    background: rgb(22 38 29 / 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-lift);
+    transform: translateY(calc(100% + 2rem));
+    transition: transform 600ms var(--ease-out);
+  }
+  .mobile-bar.is-visible {
+    transform: none;
+  }
+  .mb-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 48px;
+    border-radius: 999px;
+    color: var(--cream);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+  }
+  .mb-primary {
+    background: var(--rust);
+    color: var(--white);
+  }
+  .mobile-bar :focus-visible {
+    outline-color: var(--sage-deep);
+  }
+  @media (min-width: 1024px) {
+    .mobile-bar {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('[data-mobile-bar]');
+  const hero = document.querySelector('[data-hero]');
+  const book = document.querySelector('#book');
+  if (bar) {
+    let pastHero = !hero;
+    let inBook = false;
+    const update = () => bar.classList.toggle('is-visible', pastHero && !inBook);
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.target === hero) pastHero = !e.isIntersecting;
+        if (e.target === book) inBook = e.isIntersecting;
+      }
+      update();
+    });
+    if (hero) io.observe(hero);
+    if (book) io.observe(book);
+    update();
+  }
+</script>

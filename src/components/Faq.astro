@@ -1,0 +1,165 @@
+---
+import Icon from './Icon.astro';
+import { business, pricing, trailer } from '../config';
+
+const faqs = [
+  {
+    q: 'Do I need a special licence to tow it?',
+    a: `Usually not. Since December 2021, anyone with a full UK car licence can tow a trailer up to 3,500 kg without taking an extra test. This trailer has a maximum gross weight of ${trailer.grossWeightKg.toLocaleString('en-GB')} kg, so it’s within that limit. Your car must still be rated to tow the combined weight of the trailer and whatever you’re carrying.`,
+  },
+  {
+    q: 'What do I need on my vehicle?',
+    a: `A tow bar with a standard 50 mm tow ball, working trailer electrics, and a towing capacity of at least the loaded weight. The trailer weighs ${trailer.unladenWeightKg} kg empty, so add the weight of the car you’re moving. Your vehicle handbook lists its towing limit.`,
+  },
+  {
+    q: 'How heavy a car can I carry?',
+    a: `Up to about ${trailer.payloadKg.toLocaleString('en-GB')} kg, which covers most cars and small vans. If you’re not sure, send us the make and model and we’ll check.`,
+  },
+  {
+    q: 'What comes with the trailer?',
+    a: `Every hire includes a ${trailer.included.map((s) => s.toLowerCase()).join(' and ')}, plus the slide-out loading ramps. We’ll show you how it all works when you collect.`,
+  },
+  {
+    q: 'How does the deposit work?',
+    a: `We take a £${pricing.deposit} deposit when you book. You get it back when you return the trailer on time. There’s no booking fee.`,
+  },
+  {
+    q: 'Where and when do I collect it?',
+    a: `Collection and return are in ${business.area}. Just agree a pickup and drop-off time with us when you book.`,
+  },
+  {
+    q: 'Am I insured while towing?',
+    a: 'Your own motor insurance needs to cover you for towing a trailer. Most policies do, but check with your insurer before your hire.',
+  },
+  {
+    q: 'Can I hire it for a week or longer?',
+    a: `Yes. Each extra day is £${pricing.extraDay}, and we can offer weekly and monthly rates. Call or message us and we’ll give you a price.`,
+  },
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+
+<section class="section faq" id="faq" aria-labelledby="faq-title">
+  <div class="container grid">
+    <div class="head">
+      <p class="eyebrow" data-reveal>FAQ</p>
+      <h2 id="faq-title" class="h2" data-lines>
+        <span class="line-mask" style="--i:0"><span>Good</span></span>
+        <span class="line-mask" style="--i:1"><span>questions.</span></span>
+      </h2>
+      <p class="lead" data-reveal style="--i:2">
+        Can’t see yours? Call <a href={business.phoneHref}>{business.phoneDisplay}</a>.
+      </p>
+    </div>
+    <div class="list">
+      {
+        faqs.map((f, i) => (
+          <details data-reveal style={`--i:${i % 4}`}>
+            <summary>
+              <span>{f.q}</span>
+              <span class="pm" aria-hidden="true">
+                <Icon name="plus" />
+              </span>
+            </summary>
+            <div class="answer">
+              <p>{f.a}</p>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    gap: var(--space-l);
+  }
+  .head {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+  }
+  .h2 {
+    font-size: var(--step-4);
+    letter-spacing: -0.035em;
+  }
+  .lead a {
+    color: var(--forest);
+    font-weight: 600;
+  }
+  details {
+    border-bottom: 1px solid var(--line-strong);
+  }
+  details:first-child {
+    border-top: 1px solid var(--line-strong);
+  }
+  summary {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.4rem 0;
+    min-height: 44px;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .pm {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--sage);
+    transition:
+      transform var(--dur-med) var(--ease-out),
+      background-color var(--dur-fast);
+  }
+  summary:hover .pm {
+    background: var(--sage-deep);
+  }
+  details[open] .pm {
+    transform: rotate(45deg);
+    background: var(--forest);
+    color: var(--cream);
+  }
+  details::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 450ms var(--ease-out),
+      content-visibility 450ms allow-discrete;
+  }
+  details[open]::details-content {
+    block-size: auto;
+  }
+  .answer {
+    padding: 0 3.5rem 1.5rem 0;
+    color: var(--ink-soft);
+    max-width: 62ch;
+  }
+  @media (min-width: 960px) {
+    .grid {
+      grid-template-columns: 1fr 1.6fr;
+    }
+    .head {
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
+    }
+  }
+</style>

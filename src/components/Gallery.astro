@@ -1,0 +1,279 @@
+---
+import { Picture, getImage } from 'astro:assets';
+import Icon from './Icon.astro';
+import p1 from '../assets/photos/yard-side.jpg'; // IMG_0603
+import p2 from '../assets/photos/ramps-2.jpg'; // IMG_0608
+import p3 from '../assets/photos/deck-length.jpg'; // IMG_0609
+
+const photos = [
+  { src: p1, alt: 'Side view of the trailer showing the hitch, winch, full bed and twin axles' },
+  { src: p2, alt: 'The deck with both loading ramps stored on top and wheel straps along each side' },
+  { src: p3, alt: 'Looking down the length of the 16ft deck towards the hitch' },
+];
+
+const full = await Promise.all(photos.map((p) => getImage({ src: p.src, width: 1800, format: 'webp', quality: 72 })));
+---
+
+<section class="section gallery" id="gallery" aria-labelledby="gallery-title">
+  <div class="container head">
+    <div>
+      <p class="eyebrow" data-reveal>Gallery</p>
+      <h2 id="gallery-title" class="h2" data-lines>
+        <span class="line-mask"><span>Take a closer look.</span></span>
+      </h2>
+    </div>
+    <div class="nav" data-reveal>
+      <button type="button" class="arrow" data-prev aria-label="Previous photos"><Icon name="chevron-left" /></button>
+      <button type="button" class="arrow" data-next aria-label="Next photos"><Icon name="chevron-right" /></button>
+    </div>
+  </div>
+
+  <ul class="strip" data-strip role="list">
+    {
+      photos.map((p, i) => (
+        <li class="item" data-reveal style={`--i:${i % 4}`}>
+          <button type="button" class="open" data-full={full[i].src} data-alt={p.alt} aria-label={`View larger: ${p.alt}`}>
+            <Picture
+              src={p.src}
+              formats={['avif', 'webp']}
+          quality={68}
+              widths={[360, 560, 840]}
+              sizes="(min-width: 1024px) 30vw, 78vw"
+              alt=""
+            />
+          </button>
+        </li>
+      ))
+    }
+  </ul>
+
+  <dialog class="lightbox" data-lightbox aria-label="Photo viewer">
+    <img data-lb-img alt="" />
+    <p class="cap" data-lb-cap></p>
+    <button type="button" class="lb-btn lb-close" data-lb-close aria-label="Close"><Icon name="x" /></button>
+    <button type="button" class="lb-btn lb-prev" data-lb-prev aria-label="Previous photo"><Icon name="chevron-left" /></button>
+    <button type="button" class="lb-btn lb-next" data-lb-next aria-label="Next photo"><Icon name="chevron-right" /></button>
+  </dialog>
+</section>
+
+<style>
+  .gallery {
+    overflow: hidden;
+  }
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: var(--space-l);
+  }
+  .head > div:first-child {
+    display: grid;
+    gap: 1rem;
+  }
+  .h2 {
+    font-size: var(--step-4);
+    letter-spacing: -0.035em;
+  }
+  .nav {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .arrow {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1.5px var(--line-strong);
+    transition:
+      background-color var(--dur-fast),
+      color var(--dur-fast);
+  }
+  .arrow:hover {
+    background: var(--ink);
+    color: var(--cream);
+  }
+  .strip {
+    --edge: max(var(--gutter), (100vw - var(--max)) / 2);
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    padding: 0 var(--edge) 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--edge);
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .strip::-webkit-scrollbar {
+    display: none;
+  }
+  .item {
+    flex: 0 0 min(78vw, 420px);
+    scroll-snap-align: start;
+  }
+  .item:nth-child(even) {
+    flex-basis: min(64vw, 340px);
+    margin-top: 2.5rem;
+  }
+  .open {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    background: var(--sage);
+    cursor: zoom-in;
+  }
+  .open :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 900ms var(--ease-out);
+  }
+  @media (hover: hover) {
+    .open:hover :global(img) {
+      transform: scale(1.05);
+    }
+  }
+
+  .lightbox {
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    padding: 0;
+    border: 0;
+    background: rgb(12 20 15 / 0.94);
+    color: var(--cream);
+  }
+  .lightbox[open] {
+    display: grid;
+    place-items: center;
+    animation: lb-in 400ms var(--ease-out);
+  }
+  .lightbox::backdrop {
+    background: transparent;
+  }
+  .lightbox img {
+    max-width: min(92vw, 1600px);
+    max-height: 80dvh;
+    border-radius: var(--radius-s);
+    object-fit: contain;
+  }
+  .lightbox img.swap {
+    animation: lb-img 450ms var(--ease-out);
+  }
+  .cap {
+    position: absolute;
+    bottom: calc(1.25rem + env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(90vw, 600px);
+    text-align: center;
+    font-size: var(--step--1);
+    opacity: 0.85;
+  }
+  .lb-btn {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgb(245 240 230 / 0.12);
+    color: var(--cream);
+    transition: background-color var(--dur-fast);
+  }
+  .lb-btn:hover {
+    background: rgb(245 240 230 / 0.25);
+  }
+  .lb-btn:focus-visible {
+    outline-color: var(--sage-deep);
+  }
+  .lb-close {
+    top: calc(1rem + env(safe-area-inset-top));
+    right: 1rem;
+  }
+  .lb-prev,
+  .lb-next {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .lb-prev {
+    left: 1rem;
+  }
+  .lb-next {
+    right: 1rem;
+  }
+  @keyframes lb-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes lb-img {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+  }
+  @media (max-width: 639px) {
+    .nav {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const strip = document.querySelector<HTMLElement>('[data-strip]')!;
+  const step = () => (strip.querySelector('.item') as HTMLElement).offsetWidth + 16;
+  document.querySelector('[data-prev]')?.addEventListener('click', () => strip.scrollBy({ left: -step(), behavior: 'smooth' }));
+  document.querySelector('[data-next]')?.addEventListener('click', () => strip.scrollBy({ left: step(), behavior: 'smooth' }));
+
+  const dlg = document.querySelector<HTMLDialogElement>('[data-lightbox]')!;
+  const img = dlg.querySelector<HTMLImageElement>('[data-lb-img]')!;
+  const cap = dlg.querySelector<HTMLElement>('[data-lb-cap]')!;
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('.open[data-full]')];
+  let index = 0;
+  let opener: HTMLButtonElement | null = null;
+
+  const show = (i: number) => {
+    index = (i + buttons.length) % buttons.length;
+    const b = buttons[index];
+    img.classList.remove('swap');
+    void img.offsetWidth;
+    img.src = b.dataset.full!;
+    img.alt = b.dataset.alt!;
+    cap.textContent = `${index + 1} / ${buttons.length} · ${b.dataset.alt}`;
+    img.classList.add('swap');
+  };
+  buttons.forEach((b, i) =>
+    b.addEventListener('click', () => {
+      opener = b;
+      show(i);
+      dlg.showModal();
+    }),
+  );
+  dlg.querySelector('[data-lb-close]')!.addEventListener('click', () => dlg.close());
+  dlg.querySelector('[data-lb-prev]')!.addEventListener('click', () => show(index - 1));
+  dlg.querySelector('[data-lb-next]')!.addEventListener('click', () => show(index + 1));
+  dlg.addEventListener('click', (e) => {
+    if (e.target === dlg) dlg.close();
+  });
+  dlg.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') show(index - 1);
+    if (e.key === 'ArrowRight') show(index + 1);
+  });
+  dlg.addEventListener('close', () => opener?.focus());
+
+  // Swipe between photos on touch screens
+  let x0: number | null = null;
+  dlg.addEventListener('touchstart', (e) => (x0 = e.touches[0].clientX), { passive: true });
+  dlg.addEventListener('touchend', (e) => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 50) show(index + (dx < 0 ? 1 : -1));
+    x0 = null;
+  });
+</script>

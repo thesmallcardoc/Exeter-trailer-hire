@@ -1,0 +1,56 @@
+---
+import Base from './Base.astro';
+interface Props {
+  title: string;
+  heading: string;
+  description: string;
+  updated?: string;
+  noindex?: boolean;
+}
+const { title, heading, description, updated, noindex } = Astro.props;
+---
+
+<Base title={title} description={description} noindex={noindex}>
+  <article class="container prose">
+    <h1 data-lines><span class="line-mask"><span>{heading}</span></span></h1>
+    {updated && <p class="updated">Last updated {updated}</p>}
+    <div data-reveal><slot /></div>
+  </article>
+</Base>
+
+<style>
+  .prose {
+    max-width: 760px;
+    padding-block: var(--space-xl) var(--space-2xl);
+  }
+  h1 {
+    font-size: var(--step-4);
+    letter-spacing: -0.035em;
+    margin-bottom: 1rem;
+  }
+  .updated {
+    color: var(--ink-mute);
+    margin-bottom: var(--space-l);
+  }
+  .prose :global(h2) {
+    font-size: var(--step-2);
+    margin: 2.5rem 0 0.75rem;
+  }
+  .prose :global(p),
+  .prose :global(li) {
+    color: var(--ink-soft);
+  }
+  .prose :global(p + p) {
+    margin-top: 1rem;
+  }
+  .prose :global(ol),
+  .prose :global(ul) {
+    padding-left: 1.25rem;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .prose :global(a) {
+    color: var(--forest);
+    font-weight: 600;
+  }
+</style>

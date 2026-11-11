@@ -1,0 +1,306 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { business } from '../config';
+
+const links = [
+  { href: '/#trailer', label: 'The trailer' },
+  { href: '/#pricing', label: 'Pricing' },
+  { href: '/#gallery', label: 'Gallery' },
+  { href: '/#faq', label: 'FAQ' },
+];
+---
+
+<header class="site-header" data-header>
+  <div class="container bar">
+    <a href="/" class="brand" aria-label={`${business.name}, home`}><Logo /></a>
+
+    <nav class="nav" aria-label="Main">
+      <ul>
+        {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="actions">
+      <a class="call" href={business.phoneHref}>
+        <Icon name="phone" />
+        <span>{business.phoneDisplay}</span>
+      </a>
+      <a class="btn btn--sm btn--accent book" href="/#book">Check availability</a>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="mobile-menu" data-menu-btn>
+        <span class="visually-hidden">Menu</span>
+        <span class="burger" aria-hidden="true"><span></span><span></span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="sheet" id="mobile-menu" data-menu hidden>
+    <nav aria-label="Mobile">
+      <ul>
+        {
+          links.map((l, i) => (
+            <li style={`--i:${i}`}>
+              <a href={l.href}>{l.label}</a>
+            </li>
+          ))
+        }
+        <li style={`--i:${links.length}`}><a href="/#book">Book</a></li>
+      </ul>
+    </nav>
+    <div class="sheet-foot">
+      <a class="btn btn--block" href={business.phoneHref}><Icon name="phone" /> Call {business.phoneDisplay}</a>
+      <p>{business.area}</p>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    transition:
+      transform 420ms var(--ease-out),
+      background-color 300ms linear,
+      box-shadow 300ms linear;
+  }
+  .site-header.is-scrolled {
+    background: rgb(245 240 230 / 0.86);
+    backdrop-filter: blur(14px) saturate(1.3);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    box-shadow: 0 1px 0 var(--line);
+  }
+  .site-header.is-hidden:not(.menu-open) {
+    transform: translateY(-100%);
+  }
+  .bar {
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .brand {
+    text-decoration: none;
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+  }
+  .nav {
+    display: none;
+  }
+  .nav ul {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+    padding: 0;
+  }
+  .nav a {
+    position: relative;
+    display: inline-block;
+    padding: 0.6rem 0.9rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-decoration: none;
+    color: var(--ink-soft);
+    transition: color var(--dur-fast);
+  }
+  .nav a::after {
+    content: '';
+    position: absolute;
+    left: 0.9rem;
+    right: 0.9rem;
+    bottom: 0.35rem;
+    height: 1.5px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--dur-med) var(--ease-out);
+  }
+  .nav a:hover {
+    color: var(--ink);
+  }
+  .nav a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .call {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0 0.75rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    color: var(--forest);
+  }
+  .book {
+    display: none;
+  }
+  .menu-btn {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--cream);
+  }
+  .burger {
+    position: relative;
+    width: 18px;
+    height: 10px;
+  }
+  .burger span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transition: transform 420ms var(--ease-out), top 420ms var(--ease-out);
+  }
+  .burger span:first-child {
+    top: 0;
+  }
+  .burger span:last-child {
+    top: 8px;
+  }
+  .menu-open .burger span:first-child {
+    top: 4px;
+    transform: rotate(45deg);
+  }
+  .menu-open .burger span:last-child {
+    top: 4px;
+    transform: rotate(-45deg);
+  }
+
+  .sheet {
+    position: fixed;
+    inset: var(--header-h) 0 0;
+    height: calc(100dvh - var(--header-h));
+    background: var(--cream);
+    padding: 1.5rem var(--gutter) calc(1.5rem + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: auto;
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 600ms var(--ease-out);
+  }
+  .sheet[hidden] {
+    display: none;
+  }
+  .sheet.is-open {
+    clip-path: inset(0 0 0 0);
+  }
+  .sheet ul {
+    list-style: none;
+    padding: 0;
+  }
+  .sheet li {
+    border-bottom: 1px solid var(--line);
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 500ms var(--ease-out),
+      transform 500ms var(--ease-out);
+    transition-delay: calc(var(--i) * 60ms + 120ms);
+  }
+  .sheet.is-open li {
+    opacity: 1;
+    transform: none;
+  }
+  .sheet li a {
+    display: block;
+    padding: 1rem 0;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 9vw, 3rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+  .sheet-foot {
+    display: grid;
+    gap: 0.75rem;
+    padding-top: 2rem;
+    color: var(--ink-mute);
+    text-align: center;
+  }
+
+  @media (min-width: 640px) {
+    .book {
+      display: inline-flex;
+    }
+  }
+  @media (min-width: 1024px) {
+    .nav,
+    .call {
+      display: flex;
+    }
+    .menu-btn,
+    .sheet {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]')!;
+  const btn = document.querySelector<HTMLButtonElement>('[data-menu-btn]')!;
+  const sheet = document.querySelector<HTMLElement>('[data-menu]')!;
+
+  // Frosted background once scrolled; hide on scroll down, show on scroll up.
+  let lastY = window.scrollY;
+  let ticking = false;
+  const onScroll = () => {
+    const y = window.scrollY;
+    header.classList.toggle('is-scrolled', y > 8);
+    header.classList.toggle('is-hidden', y > 400 && y > lastY + 4);
+    if (y < lastY - 4) header.classList.remove('is-hidden');
+    lastY = y;
+    ticking = false;
+  };
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!ticking) {
+        requestAnimationFrame(onScroll);
+        ticking = true;
+      }
+    },
+    { passive: true },
+  );
+  onScroll();
+
+  const setOpen = (open: boolean) => {
+    btn.setAttribute('aria-expanded', String(open));
+    header.classList.toggle('menu-open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) {
+      sheet.hidden = false;
+      requestAnimationFrame(() => requestAnimationFrame(() => sheet.classList.add('is-open')));
+    } else {
+      sheet.classList.remove('is-open');
+      setTimeout(() => {
+        if (!sheet.classList.contains('is-open')) sheet.hidden = true;
+      }, 600);
+    }
+  };
+  btn.addEventListener('click', () => setOpen(btn.getAttribute('aria-expanded') !== 'true'));
+  sheet.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+      setOpen(false);
+      btn.focus();
+    }
+  });
+</script>
