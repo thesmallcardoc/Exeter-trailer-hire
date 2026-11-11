@@ -4,6 +4,10 @@ import { business, pricing, trailer } from '../config';
 
 const faqs = [
   {
+    q: 'How do I pay?',
+    a: `By bank transfer. Once we confirm your booking we send you the amount, our bank details and a payment reference. Please pay before you collect the trailer.`,
+  },
+  {
     q: 'Do I need a special licence to tow it?',
     a: `Usually not. Since December 2021, anyone with a full UK car licence can tow a trailer up to 3,500 kg without taking an extra test. This trailer has a maximum gross weight of ${trailer.grossWeightKg.toLocaleString('en-GB')} kg, so it’s within that limit. Your car must still be rated to tow the combined weight of the trailer and whatever you’re carrying.`,
   },
@@ -21,7 +25,7 @@ const faqs = [
   },
   {
     q: 'How does the deposit work?',
-    a: `We take a £${pricing.deposit} deposit when you book. You get it back when you return the trailer on time. There’s no booking fee.`,
+    a: `Once we confirm your dates, we email or message you our bank details. You pay the hire plus a £${pricing.deposit} deposit by bank transfer before collection, and the deposit comes back to you when you return the trailer on time. There’s no booking fee.`,
   },
   {
     q: 'Where and when do I collect it?',

@@ -56,6 +56,12 @@ Booked days are greyed out using a Google Calendar you control from your phone.
 
 If these aren't set, the calendar still works for picking dates. It just says you'll confirm availability by reply.
 
+## Booking system (Accept → Google Calendar, bank transfer)
+
+Enquiries can go to a free Google Apps Script in your Google account that emails you Accept / Decline buttons,
+adds accepted hires to a "Trailer bookings" calendar, emails customers the amount due with your bank details,
+and crosses booked days out on the website. Code: `apps-script/Code.gs`. Step-by-step setup: **`apps-script/SETUP.md`**.
+
 ## Google reviews (automatic, free)
 
 The reviews section pulls your latest Google reviews automatically through a small Netlify function

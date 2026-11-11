@@ -64,6 +64,18 @@ const { class: cls = '' } = Astro.props;
     }
   }
   .logo-text {
+    white-space: nowrap;
+  }
+  @media (max-width: 360px) {
+    .logo {
+      gap: 0.4rem;
+      font-size: 1rem;
+    }
+    .logo-mark {
+      height: 20px;
+    }
+  }
+  .logo-text {
     color: var(--ink);
   }
   .logo-text span {

@@ -143,7 +143,7 @@ const formAttrs =
           <Icon name="arrow-right" />
         </button>
         <p class="fine">
-          No payment now. £{pricing.deposit} deposit on confirmation, no booking fee. See our <a href="/privacy">privacy notice</a>.
+          No payment now. Once we confirm, you pay the hire plus a £{pricing.deposit} refundable deposit by bank transfer. No booking fee. See our <a href="/privacy">privacy notice</a>.
         </p>
         <p class="form-error" data-form-error role="alert" hidden>
           <Icon name="alert" />
@@ -154,7 +154,7 @@ const formAttrs =
       <div class="success" data-success hidden tabindex="-1">
         <span class="tick"><Icon name="check" /></span>
         <h3>Enquiry sent. Thank you!</h3>
-        <p>We’ll be in touch shortly to confirm your dates. Need an answer faster?</p>
+        <p>We’ll be in touch shortly to confirm your dates and send bank transfer details. Need an answer faster?</p>
         <div class="ctas">
           <a class="btn" href={business.phoneHref}><Icon name="phone" /> Call {business.phoneDisplay}</a>
           {business.whatsapp && <a class="btn btn--ghost" data-success-wa href="#" target="_blank" rel="noopener"><Icon name="message" /> WhatsApp</a>}
@@ -822,7 +822,27 @@ const formAttrs =
     setTimeout(() => (statusText.textContent = baseStatus), 5000);
   }
 
+  // Bookings service (Google Apps Script web app): receives enquiries and reports booked dates.
+  const bookingsUrl = (import.meta.env.PUBLIC_BOOKINGS_URL as string | undefined) || '';
+
   async function loadAvailability() {
+    if (bookingsUrl) {
+      try {
+        const res = await fetch(`${bookingsUrl}?action=availability`);
+        const data: { ok?: boolean; busy?: string[] } = await res.json();
+        if (!data.ok) throw new Error('availability');
+        (data.busy ?? []).forEach((d) => booked.add(d));
+        if (start && (isBooked(start) || (end && rangeHasBooked(start, end)))) {
+          start = end = null;
+          updateSummary();
+        }
+        render();
+        setStatus('Live availability. Booked days are crossed out.', true);
+      } catch {
+        setStatus('Couldn’t load live availability. We’ll confirm your dates when we reply.');
+      }
+      return;
+    }
     const id = import.meta.env.PUBLIC_GCAL_ID;
     const key = import.meta.env.PUBLIC_GCAL_KEY;
     if (!id || !key) {
@@ -908,7 +928,27 @@ const formAttrs =
     try {
       const data = new FormData(form);
       const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
-      if (isLocal) {
+      // 1st choice: the bookings service (owner gets Accept/Decline buttons).
+      let sentToBookings = false;
+      if (bookingsUrl && !isLocal) {
+        try {
+          const payload = {
+            name: data.get('name'), phone: data.get('phone'), email: data.get('email'),
+            start: startInput.value, end: endInput.value || startInput.value,
+            vehicle: data.get('vehicle'), message: data.get('message'),
+            botcheck: data.get('botcheck') || data.get('bot-field') || '',
+          };
+          // text/plain keeps this a "simple" request, which Apps Script accepts from other websites
+          const res = await fetch(bookingsUrl, { method: 'POST', body: JSON.stringify(payload) });
+          const json = await res.json();
+          sentToBookings = !!json.ok;
+        } catch {
+          sentToBookings = false; // fall back to email below
+        }
+      }
+      if (sentToBookings) {
+        // done
+      } else if (isLocal) {
         await new Promise((r) => setTimeout(r, 900)); // don't send real enquiries while developing
       } else if (form.dataset.provider === 'web3forms') {
         data.delete('redirect'); // only used by the no-JavaScript fallback

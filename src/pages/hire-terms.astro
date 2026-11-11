@@ -7,22 +7,23 @@ import { business, pricing, trailer } from '../config';
   title={`Terms of Hire | ${business.name}`}
   heading="Terms of hire"
   description={`The terms for hiring the ${trailer.model} from ${business.name}.`}
-  updated="10 November 2026"
+  updated="11 November 2026"
 >
   <p>These terms apply to every hire of the trailer from {business.name} ("we", "us"). By booking, you ("the hirer") agree to them.</p>
 
   <h2>1. Booking and payment</h2>
   <ol>
-    <li>A booking is confirmed once we have agreed your dates and received the £{pricing.deposit} deposit. There is no booking fee.</li>
+    <li>A booking is confirmed once we have agreed your dates. We will then send you the amount due and our bank details. There is no booking fee.</li>
+    <li>Payment is by bank transfer only. The hire charge and the £{pricing.deposit} deposit must be received before you collect the trailer. Please use the payment reference we give you.</li>
     <li>
       Hire charges are: £{pricing.day} for one day, £{pricing.weekend} for a weekend (Saturday and Sunday), £{pricing.weekdays} for
-      Monday to Friday, and £{pricing.extraDay} for each extra day. The hire charge is paid on or before collection.
+      Monday to Friday, and £{pricing.extraDay} for each extra day. 
     </li>
   </ol>
 
   <h2>2. Deposit</h2>
   <ol>
-    <li>The £{pricing.deposit} deposit is returned when the trailer is returned on time on the agreed date.</li>
+    <li>The £{pricing.deposit} deposit is returned by bank transfer when the trailer is returned on time on the agreed date.</li>
     <li>If the trailer is returned late, or with damage or missing equipment, we may keep some or all of the deposit to cover extra hire days, repairs or replacement.</li>
   </ol>
 
