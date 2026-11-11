@@ -1,0 +1,11 @@
+// Cloudflare Workers config: serves the built Astro site (the `dist` folder) as static files.
+// Cloudflare runs `npm run build` and then `npx wrangler deploy`, which reads this file.
+{
+  "name": "exeter-trailer-hire",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    // Unknown addresses show our own "Wrong turn" page with a 404 status
+    "not_found_handling": "404-page"
+  }
+}
